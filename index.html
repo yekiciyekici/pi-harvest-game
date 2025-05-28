@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pi Harvest Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f2f2f2;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    document.body.appendChild(canvas);
+    canvas.width = 400;
+    canvas.height = 600;
+
+    let piCount = 0;
+    let crop = { x: 150, y: 200, size: 100, active: true };
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#222';
+      ctx.fillRect(0, 0, canvas.width, 80);
+      ctx.fillStyle = '#fff';
+      ctx.font = '24px sans-serif';
+      ctx.fillText(`Pi Collected: π ${piCount}`, 20, 50);
+      if (crop.active) {
+        ctx.fillStyle = '#ffcc00';
+        ctx.beginPath();
+        ctx.arc(crop.x + crop.size / 2, crop.y + crop.size / 2, crop.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.font = '16px sans-serif';
+        ctx.fillText('Tap!', crop.x + 20, crop.y + 55);
+      }
+    }
+
+    canvas.addEventListener('click', function (e) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      if (
+        crop.active &&
+        mouseX > crop.x && mouseX < crop.x + crop.size &&
+        mouseY > crop.y && mouseY < crop.y + crop.size
+      ) {
+        piCount++;
+        crop.active = false;
+        setTimeout(() => {
+          crop.active = true;
+        }, 1000);
+      }
+    });
+
+    function gameLoop() {
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
